@@ -1,5 +1,5 @@
 # Cursed Words
-a python name generator
+a (cursed) python word generator.
 
 ## The Why
 1. I was bored in chemistry class
