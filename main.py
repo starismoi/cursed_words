@@ -19,16 +19,27 @@ except IndexError:
     result_type = "default"
 
 vowels = ["a","i","e","o","u","ae","ie","ei","ö","ü","ee"]
+umlaut_cont_vowels = ["a","i","e","o","u","ae","ie",]
+umlauts = ["ö","ü"]
+
 vowels_p = []
+umlaut_cont_vowels_p = []
 for vowel in vowels:
     if vowel in ["ae","ie"]:
         vowels_p.append(4.7)
-    elif vowel in ["ü","ö"]:
-        vowels_p.append(4.3)
+    elif vowel in umlauts:
+        vowels_p.append(4.7)
     elif vowel == "ee":
         vowels_p.append(4)
     else:
         vowels_p.append(5)
+
+for vowel in umlaut_cont_vowels     :
+    if vowel in ["ae","ie"]:
+        umlaut_cont_vowels_p.append(4.7)
+    else:
+        umlaut_cont_vowels_p.append(5)
+
 consonants = ["b","f","j","k","l","m","n","p","q","r","s","v","x","y"]
 cons_con = ["c","d","g","w","z","t"]
 cons_sfx = ["h","t","sch"]
@@ -45,10 +56,12 @@ def choose_token(set):
         set = random.choices(set, weights = cons_sfx_p)
     elif set == vowels:
         set = random.choices(set, weights = vowels_p)
+    elif set == umlaut_cont_vowels:
+        set = random.choices(set, weights = umlaut_cont_vowels_p)
     choice = random.choice(set)
     return choice
 
-def return_token(token, prev_token, old_token):
+def return_token(token, prev_token, old_token, prev_vowel):
     if token in vowels:
         set_choice = random.choice([consonants, cons_sfx, cons_con])
         token_choice = choose_token(set_choice)
@@ -62,16 +75,27 @@ def return_token(token, prev_token, old_token):
         return token_choice
     elif token == "s":
         set_choice = random.choice([vowels, s_sfx])
+        if (set_choice == vowels) and prev_vowel in umlauts:
+            set_choice = umlaut_cont_vowels
         token_choice = choose_token(set_choice)
         return token_choice
     elif token in cons_con:
         set_choice = random.choice([vowels, cons_sfx])
         token_choice = choose_token(set_choice)
         if prev_token == "t" and old_token == "t":
-            token_choice = choose_token(vowels)
+            if prev_vowel in umlauts:
+                token_choice = choose_token(umlaut_cont_vowels)
+            else:
+                token_choice = choose_token(vowels)
+        if prev_vowel in umlauts and set_choice == vowels:
+            set_choice = umlaut_cont_vowels
+            token_choice = choose_token(set_choice)
         return token_choice
     else:
-        token_choice = choose_token(vowels)
+        if prev_vowel in umlauts:
+            token_choice = choose_token(umlaut_cont_vowels)
+        else:
+            token_choice = choose_token(vowels)
         return token_choice
 
 def word_gen():
@@ -83,11 +107,14 @@ def word_gen():
     token = first_token()
     prev_token = ""
     old_token = ""
+    prev_vowel = ""
     word = word + token
     for t in range(length):
         old_token = prev_token
         prev_token = token
-        token = return_token(token, prev_token, old_token)
+        if token in vowels:
+            prev_vowel = token
+        token = return_token(token, prev_token, old_token, prev_vowel)
         word = word + token
     return word
 
