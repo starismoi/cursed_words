@@ -48,7 +48,7 @@ def choose_token(set):
     choice = random.choice(set)
     return choice
 
-def return_token(token, prev_token):
+def return_token(token, prev_token, old_token):
     if token in vowels:
         set_choice = random.choice([consonants, cons_sfx, cons_con])
         token_choice = choose_token(set_choice)
@@ -67,7 +67,7 @@ def return_token(token, prev_token):
     elif token in cons_con:
         set_choice = random.choice([vowels, cons_sfx])
         token_choice = choose_token(set_choice)
-        if prev_token == "t" and token_choice == "t":
+        if prev_token == "t" and old_token == "t":
             token_choice = choose_token(vowels)
         return token_choice
     else:
@@ -82,10 +82,12 @@ def word_gen():
     word = ""
     token = first_token()
     prev_token = ""
+    old_token = ""
     word = word + token
     for t in range(length):
+        old_token = prev_token
         prev_token = token
-        token = return_token(token, prev_token)
+        token = return_token(token, prev_token, old_token)
         word = word + token
     return word
 
