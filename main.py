@@ -30,12 +30,10 @@ for vowel in vowels:
     else:
         vowels_p.append(5)
 consonants = ["b","f","j","k","l","m","n","p","q","r","s","v","x","y"]
-cons_con = ["c","d","g","w","z"]
+cons_con = ["c","d","g","w","z","t"]
 cons_sfx = ["h","t","sch"]
 cons_sfx_p = [5,5,4.5]
 s_sfx = ["h","t"]
-t_sfx = ["h","sch"]
-t_sfx_p = [5,4.5]
 
 def first_token():
     set_choice = random.choice([vowels,consonants,cons_sfx])
@@ -45,8 +43,6 @@ def first_token():
 def choose_token(set):
     if set == cons_sfx:
         set = random.choices(set, weights = cons_sfx_p)
-    elif set == t_sfx:
-        set = random.choices(set, weights = t_sfx_p)
     elif set == vowels:
         set = random.choices(set, weights = vowels_p)
     choice = random.choice(set)
@@ -68,13 +64,11 @@ def return_token(token, prev_token):
         set_choice = random.choice([vowels, s_sfx])
         token_choice = choose_token(set_choice)
         return token_choice
-    elif token == "t":
-        set_choice = random.choice([vowels, t_sfx])
-        token_choice = choose_token(set_choice)
-        return token_choice
     elif token in cons_con:
         set_choice = random.choice([vowels, cons_sfx])
         token_choice = choose_token(set_choice)
+        if prev_token == "t" and token_choice == "t":
+            token_choice = choose_token(vowels)
         return token_choice
     else:
         token_choice = choose_token(vowels)
